@@ -1,20 +1,20 @@
-# 🧠 MIPS Visual Simulator - Extensión Instrucciones 32 bits
+#  MIPS Visual Simulator - Extensión Instrucciones 32 bits
 
 Este proyecto amplía el simulador visual de MIPS permitiendo una experiencia más completa e intuitiva. Se ha agregado soporte a nuevas instrucciones de 32 bits y mejoras visuales para el seguimiento y comprensión del código MIPS.
 
 ---
 
-## 🚀 Cambios Implementados
+##  Cambios Implementados
 
-### ✅ Soporte para nuevas instrucciones de 32 bits
+###  Soporte para nuevas instrucciones de 32 bits
 
 - Se añadieron instrucciones tipo **R**, **I** y **J**.
 - Las nuevas instrucciones permiten realizar operaciones como desplazamiento, comparaciones y sumas sin overflow.
 - Estas se integraron en la lógica del backend y afectan correctamente la memoria y registros.
 
-### 📚 Instrucciones implementadas
+###  Instrucciones implementadas
 
-#### 🔷 Tipo R (10)
+####  Tipo R (10)
 
 | Instrucción | Descripción                       |
 |-------------|-----------------------------------|
@@ -29,7 +29,7 @@ Este proyecto amplía el simulador visual de MIPS permitiendo una experiencia m�
 | `sll`       | Shift left logical                |
 | `srl`       | Shift right logical               |
 
-#### 🔷 Tipo I (10)
+####  Tipo I (10)
 
 | Instrucción | Descripción                                  |
 |-------------|----------------------------------------------|
@@ -44,18 +44,18 @@ Este proyecto amplía el simulador visual de MIPS permitiendo una experiencia m�
 | `slti`      | Set less than immediate (signed)             |
 | `sltiu`     | Set less than immediate unsigned             |
 
-#### 🔷 Tipo J (2)
+####  Tipo J (2)
 
 | Instrucción | Descripción                |
 |-------------|----------------------------|
 | `j`         | Jump                       |
 | `jal`       | Jump and link              |
 
-**🔢 Total: 22 instrucciones de 32 bits**
+** Total: 22 instrucciones de 32 bits**
 
 ---
 
-## 👨‍💻 Detalles de implementación
+##  Detalles de implementación
 
 ### Backend (Lógica de ejecución)
 
