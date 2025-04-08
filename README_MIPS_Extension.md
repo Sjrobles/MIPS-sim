@@ -57,18 +57,184 @@ Este proyecto amplía el simulador visual de MIPS permitiendo una experiencia m�
 
 ##  Detalles de implementación
 
-### Backend (Lógica de ejecución)
+##  Diccionario de Instrucciones (`instructionSet`)
 
-- En el archivo principal de ejecución (por ejemplo `executeInstruction.js`), se agregaron nuevos `case` en el `switch` para interpretar las nuevas instrucciones.
-- Se respetó el formato de MIPS: tipo R usa registros y `shamt`, tipo I usa inmediato, y tipo J solo dirección.
-- Para instrucciones como `jal`, se modificó también el `PC` y se guardó el valor de retorno en `$ra`.
+El archivo contiene un diccionario organizado por tipo de instrucción (R, I, J) y define los códigos `opcode` y `funct` utilizados durante la codificación de instrucciones:
 
-### Frontend (Interfaz Visual)
+```js
+const instructionSet = {
+  R: {
+    "add":  { funct: "100000" },
+    "addu": { funct: "100001" },
+    "sub":  { funct: "100010" },
+    "subu": { funct: "100011" },
+    "and":  { funct: "100100" },
+    "or":   { funct: "100101" },
+    "slt":  { funct: "101010" },
+    "sltu": { funct: "101011" }
+  },
+  I: {
+    "addi":  { opcode: "001000" },
+    "addiu": { opcode: "001001" },
+    "slti":  { opcode: "001010" },
+    "sltiu": { opcode: "001011" },
+    "andi":  { opcode: "001100" },
+    "ori":   { opcode: "001101" },
+    "lw":    { opcode: "100011" },
+    "sw":    { opcode: "101011" },
+    "beq":   { opcode: "000100" },
+    "bne":   { opcode: "000101" }
+  },
+  J: {
+    "j":    { opcode: "000010" },
+    "jal":  { opcode: "000011" }
+  }
+};
+```
 
-#### Instruction Viewer
-- Se implementó un **Instruction Viewer** que permite ver la lista de instrucciones destacando la actual.
-- Visualmente es un cuadro similar al debugger y se sincroniza con el `PC`.
+Esto permite generar automáticamente la codificación hexadecimal de las instrucciones según sus componentes (`opcode`, `rs`, `rt`, `rd`, `shamt`, `funct`, `immediate`, `address`, etc.)
 
-#### Memoria y Registros
-- Se añadió la posibilidad de contraer y expandir los módulos de Memoria RAM y Registros.
-- Se resalta el **registro modificado** durante la ejecución, así como el valor.
+---
+
+##  Ejecución de Instrucciones (`executeMIPSInstruction`)
+
+El núcleo funcional de la simulación es la función `executeMIPSInstruction`, que interpreta una instrucción en formato ensamblador, ejecuta la lógica correspondiente sobre los registros o memoria, y retorna el nuevo valor del PC (Program Counter). Esto permite simular el comportamiento real del procesador MIPS de forma intuitiva.
+
+Este es un extracto de la función para entender su estructura y flujo:
+
+```js
+function executeMIPSInstruction(instruction, registers, memory, PC) {
+  const [op, ...operands] = instruction.trim().split(/\s+/);
+
+  switch (op) {
+    case "add": {
+      const [rd, rs, rt] = operands;
+      registers[rd] = registers[rs] + registers[rt];
+      break;
+    }
+    case "addu": {
+      const [rd, rs, rt] = operands;
+      registers[rd] = (registers[rs] >>> 0) + (registers[rt] >>> 0);
+      break;
+    }
+    case "sub": {
+      const [rd, rs, rt] = operands;
+      registers[rd] = registers[rs] - registers[rt];
+      break;
+    }
+    case "subu": {
+      const [rd, rs, rt] = operands;
+      registers[rd] = (registers[rs] >>> 0) - (registers[rt] >>> 0);
+      break;
+    }
+    case "slt": {
+      const [rd, rs, rt] = operands;
+      registers[rd] = registers[rs] < registers[rt] ? 1 : 0;
+      break;
+    }
+    case "sltu": {
+      const [rd, rs, rt] = operands;
+      registers[rd] = (registers[rs] >>> 0) < (registers[rt] >>> 0) ? 1 : 0;
+      break;
+    }
+    case "and": {
+      const [rd, rs, rt] = operands;
+      registers[rd] = registers[rs] & registers[rt];
+      break;
+    }
+    case "or": {
+      const [rd, rs, rt] = operands;
+      registers[rd] = registers[rs] | registers[rt];
+      break;
+    }
+    case "sll": {
+      const [rd, rt, shamt] = operands;
+      registers[rd] = registers[rt] << parseInt(shamt, 0);
+      break;
+    }
+    case "srl": {
+      const [rd, rt, shamt] = operands;
+      registers[rd] = registers[rt] >>> parseInt(shamt, 0);
+      break;
+    }
+    case "addi": {
+      const [rt, rs, immediate] = operands;
+      registers[rt] = registers[rs] + parseInt(immediate, 0);
+      break;
+    }
+    case "addiu": {
+      const [rt, rs, immediate] = operands;
+      registers[rt] = (registers[rs] >>> 0) + (parseInt(immediate, 0) >>> 0);
+      break;
+    }
+    case "andi": {
+      const [rt, rs, immediate] = operands;
+      registers[rt] = registers[rs] & parseInt(immediate, 0);
+      break;
+    }
+    case "ori": {
+      const [rt, rs, immediate] = operands;
+      registers[rt] = registers[rs] | parseInt(immediate, 0);
+      break;
+    }
+    case "slti": {
+      const [rt, rs, immediate] = operands;
+      registers[rt] = registers[rs] < parseInt(immediate, 0) ? 1 : 0;
+      break;
+    }
+    case "sltiu": {
+      const [rt, rs, immediate] = operands;
+      registers[rt] = (registers[rs] >>> 0) < (parseInt(immediate, 0) >>> 0) ? 1 : 0;
+      break;
+    }
+    case "lw": {
+      const [rt, rs, offset] = operands;
+      const address = registers[rs] + parseInt(offset, 0);
+      if (memory.hasOwnProperty(address)) {
+        registers[rt] = memory[address];
+      } else {
+        console.error("Memory address not found:", address);
+      }
+      break;
+    }
+    case "sw": {
+      const [rt, rs, offset] = operands;
+      const address = registers[rs] + parseInt(offset, 0);
+      memory[address] = registers[rt];
+      break;
+    }
+    case "beq": {
+      const [rs, rt, offset] = operands;
+      if (registers[rs] === registers[rt]) {
+        return PC + parseInt(offset, 0);
+      }
+      break;
+    }
+    case "bne": {
+      const [rs, rt, offset] = operands;
+      if (registers[rs] !== registers[rt]) {
+        return PC + parseInt(offset, 0);
+      }
+      break;
+    }
+    case "j": {
+      const [address] = operands;
+      return parseInt(address, 0);
+    }
+    case "jal": {
+      const [address] = operands;
+      registers["ra"] = PC + 1;
+      return parseInt(address, 0);
+    }
+    default: {
+      console.error("Unsupported operation:", op);
+      break;
+    }
+  }
+
+  return PC + 1;
+}
+```
+
+Esta lógica modular permite expandir el simulador fácilmente con nuevas instrucciones en el futuro.
+
