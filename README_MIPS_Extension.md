@@ -238,3 +238,53 @@ function executeMIPSInstruction(instruction, registers, memory, PC) {
 
 Esta lógica modular permite expandir el simulador fácilmente con nuevas instrucciones en el futuro.
 
+En este fragmento, se implementaron las nuevas funciones de 32 bits para ser funcionales y poder ser interpretadas, asi mismo, que dichas instrucciones tengan repercusiones sobre la memoria y los registros del simulador. 
+
+
+###  Instruction Viewer
+
+Se implementó un componente visual llamado **Instruction Viewer**, el cual se muestra **junto al Debugger** y permite observar de forma clara y ordenada cuál instrucción se está ejecutando en cada ciclo del programa. Esto mejora significativamente la experiencia del usuario al simular código MIPS, permitiendo visualizar el flujo de ejecución paso a paso.
+
+####  Estética y diseño
+
+- Presenta un diseño en forma de tarjeta similar al Debugger.
+- Aparece en paralelo al Debugger dentro del entorno visual.
+- Utiliza sombreado y bordes suaves para mejorar la lectura.
+- Resalta la instrucción actual basada en el valor del contador de programa (`PC`) con un fondo color crema y texto en negrita.
+
+####  Fragmento de código JSX
+
+```jsx
+{/* Lista de instrucciones en un estilo similar al Debugger */}
+<div
+  className="instruction-list"
+  style={{
+    backgroundColor: "#f8f9fa",
+    border: "1px solid #dee2e6",
+    borderRadius: "8px",
+    padding: "1rem",
+    marginTop: "1rem",
+    maxHeight: "200px",
+    overflowY: "auto",
+    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+    width: "100%",
+  }}
+>
+  <h4 style={{ marginBottom: "0.5rem", fontSize: "1rem", fontWeight: "bold" }}>
+    Instruction Viewer
+  </h4>
+  {mipsInput.trim().split('\n').map((inst, index) => (
+    <pre
+      key={index}
+      style={{
+        backgroundColor: index === PC ? '#ffefc1' : 'transparent',
+        fontWeight: index === PC ? 'bold' : 'normal',
+        padding: '4px 8px',
+        borderRadius: '4px',
+        margin: 0,
+      }}
+    >
+      {inst}
+    </pre>
+  ))}
+</div>
