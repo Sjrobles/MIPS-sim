@@ -288,3 +288,53 @@ Se implementó un componente visual llamado **Instruction Viewer**, el cual se m
     </pre>
   ))}
 </div>
+```
+#  Detección de Overflow en Instrucciones MIPS
+
+##  ¿Qué es esta sección visual?
+
+Para mejorar la **interactividad y depuración visual** del simulador MIPS, se añadió una sección que muestra si la **última instrucción ejecutada generó un overflow aritmético**.
+
+Se representa con el siguiente componente visual en React:
+
+```jsx
+<div style={{
+  backgroundColor: registers._overflow ? '#ff4d4f' : '#e0e0e0',
+  color: registers._overflow ? 'white' : 'black',
+  padding: '10px',
+  margin: '1rem 0',
+  borderRadius: '8px',
+  textAlign: 'center',
+  fontWeight: 'bold',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+}}>
+  {registers._overflow
+    ? '⚠️ ¡Overflow detectado en la última instrucción!'
+    : '✅ Sin overflow detectado'}
+</div>
+```
+## 🧠 ¿Por qué se agregó?
+
+El overflow aritmético ocurre cuando el resultado de una operación **signed** (con signo) excede los límites de un número entero de 32 bits (−2³¹ a 2³¹−1).
+
+Este indicador se agregó para:
+
+- ✅ Mostrar al usuario cuándo ocurre un **overflow**
+- 🐞 Facilitar la **depuración** de instrucciones
+- 🧪 Ser un recurso **educativo visual** para comprender cómo MIPS maneja operaciones signed
+
+---
+
+## ⚙️ ¿Qué instrucciones lo utilizan?
+
+El campo `registers._overflow` solo es actualizado por instrucciones que requieren **detección explícita de overflow**:
+
+| Instrucción | Tipo | Detecta Overflow |
+|-------------|------|------------------|
+| `add`       | R    | ✅ Sí             |
+| `sub`       | R    | ✅ Sí             |
+| `addi`      | I    | ✅ Sí             |
+
+Otras instrucciones como `addu`, `subu`, `addiu` **no lo detectan** porque son **unsigned** y no lanzan excepciones por overflow.
+
+
