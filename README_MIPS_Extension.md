@@ -313,19 +313,19 @@ Se representa con el siguiente componente visual en React:
     : '✅ Sin overflow detectado'}
 </div>
 ```
-## 🧠 ¿Por qué se agregó?
+##  ¿Por qué se agregó?
 
 El overflow aritmético ocurre cuando el resultado de una operación **signed** (con signo) excede los límites de un número entero de 32 bits (−2³¹ a 2³¹−1).
 
 Este indicador se agregó para:
 
-- ✅ Mostrar al usuario cuándo ocurre un **overflow**
-- 🐞 Facilitar la **depuración** de instrucciones
-- 🧪 Ser un recurso **educativo visual** para comprender cómo MIPS maneja operaciones signed
+- Mostrar al usuario cuándo ocurre un **overflow**
+- Facilitar la **depuración** de instrucciones
+- Ser un recurso **educativo visual** para comprender cómo MIPS maneja operaciones signed
 
 ---
 
-## ⚙️ ¿Qué instrucciones lo utilizan?
+##  ¿Qué instrucciones lo utilizan?
 
 El campo `registers._overflow` solo es actualizado por instrucciones que requieren **detección explícita de overflow**:
 
